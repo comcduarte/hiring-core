@@ -1,0 +1,30 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Core\User\Enum;
+
+use function array_column;
+use function array_filter;
+
+enum UserRoleEnum: string
+{
+    case Guest = 'guest';
+    case User  = 'user';
+
+    /**
+     * @return array<int, self>
+     */
+    public static function validCases(): array
+    {
+        return array_filter(self::cases(), fn (self $value) => $value !== self::Guest);
+    }
+
+    /**
+     * @return non-empty-string[]
+     */
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
+}
