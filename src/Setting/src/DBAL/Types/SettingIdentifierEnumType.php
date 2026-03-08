@@ -11,7 +11,7 @@ class SettingIdentifierEnumType extends AbstractEnumType
 {
     public const NAME = 'setting_enum';
 
-    public function getEnumClass(): string
+    protected function getEnumClass(): string
     {
         return SettingIdentifierEnum::class;
     }

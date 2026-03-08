@@ -8,7 +8,6 @@ use BackedEnum;
 use Core\App\Entity\AbstractEntity;
 use Core\App\Entity\RoleInterface;
 use Core\App\Entity\TimestampsTrait;
-use Core\App\Entity\UuidIdentifierTrait;
 use Core\User\Enum\UserRoleEnum;
 use Core\User\Repository\UserRoleRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -22,7 +21,6 @@ use Doctrine\ORM\Mapping as ORM;
 class UserRole extends AbstractEntity implements RoleInterface
 {
     use TimestampsTrait;
-    use UuidIdentifierTrait;
 
     #[ORM\Column(
         name: 'name',
@@ -32,6 +30,13 @@ class UserRole extends AbstractEntity implements RoleInterface
         options: ['default' => UserRoleEnum::User]
     )]
     protected UserRoleEnum $name = UserRoleEnum::User;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->created();
+    }
 
     public function getName(): UserRoleEnum
     {
@@ -54,7 +59,7 @@ class UserRole extends AbstractEntity implements RoleInterface
     public function getArrayCopy(): array
     {
         return [
-            'id'      => $this->id->toString(),
+            'uuid'    => $this->uuid->toString(),
             'name'    => $this->name->value,
             'created' => $this->created,
             'updated' => $this->updated,

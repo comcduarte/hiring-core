@@ -6,6 +6,8 @@ namespace Core\App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Laminas\Stdlib\ArraySerializableInterface;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 use function is_array;
 use function method_exists;
@@ -14,13 +16,18 @@ use function ucfirst;
 #[ORM\MappedSuperclass]
 abstract class AbstractEntity implements ArraySerializableInterface, EntityInterface
 {
+    #[ORM\Id]
+    #[ORM\Column(name: 'uuid', type: 'uuid_binary', unique: true)]
+    protected UuidInterface $uuid;
+
     public function __construct()
     {
-        $this->initId();
+        $this->uuid = Uuid::uuid7();
     }
 
-    protected function initId(): void
+    public function getUuid(): UuidInterface
     {
+        return $this->uuid;
     }
 
     /**

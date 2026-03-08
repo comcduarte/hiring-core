@@ -10,7 +10,6 @@ use Core\App\Entity\AbstractEntity;
 use Core\App\Entity\PasswordTrait;
 use Core\App\Entity\RoleInterface;
 use Core\App\Entity\TimestampsTrait;
-use Core\App\Entity\UuidIdentifierTrait;
 use Core\Setting\Entity\Setting;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -30,7 +29,6 @@ class Admin extends AbstractEntity implements UserEntityInterface
 {
     use PasswordTrait;
     use TimestampsTrait;
-    use UuidIdentifierTrait;
 
     /** @var non-empty-string|null $identity */
     #[ORM\Column(name: 'identity', type: 'string', length: 191, unique: true)]
@@ -55,8 +53,8 @@ class Admin extends AbstractEntity implements UserEntityInterface
     /** @var Collection<int, RoleInterface> $roles */
     #[ORM\ManyToMany(targetEntity: AdminRole::class)]
     #[ORM\JoinTable(name: 'admin_roles')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
-    #[ORM\InverseJoinColumn(name: 'role_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'userUuid', referencedColumnName: 'uuid')]
+    #[ORM\InverseJoinColumn(name: 'roleUuid', referencedColumnName: 'uuid')]
     protected Collection $roles;
 
     /** @var Collection<int, Setting> $settings */
@@ -67,6 +65,7 @@ class Admin extends AbstractEntity implements UserEntityInterface
     {
         parent::__construct();
 
+        $this->created();
         $this->roles    = new ArrayCollection();
         $this->settings = new ArrayCollection();
     }
@@ -220,7 +219,7 @@ class Admin extends AbstractEntity implements UserEntityInterface
 
     /**
      * @return array{
-     *      id: non-empty-string,
+     *      uuid: non-empty-string,
      *      identity: non-empty-string|null,
      *      firstName: string|null,
      *      lastName: string|null,
@@ -233,7 +232,7 @@ class Admin extends AbstractEntity implements UserEntityInterface
     public function getArrayCopy(): array
     {
         return [
-            'id'        => $this->id->toString(),
+            'uuid'      => $this->uuid->toString(),
             'identity'  => $this->identity,
             'firstName' => $this->firstName,
             'lastName'  => $this->lastName,

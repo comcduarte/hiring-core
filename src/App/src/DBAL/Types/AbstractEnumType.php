@@ -6,7 +6,6 @@ namespace Core\App\DBAL\Types;
 
 use BackedEnum;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\DBAL\Types\Type;
 
@@ -18,15 +17,11 @@ abstract class AbstractEnumType extends Type
 {
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        if ($platform instanceof PostgreSQLPlatform) {
-            return $this->getName();
-        }
-
         if ($platform instanceof SQLitePlatform) {
             return 'TEXT';
         }
 
-        $values = array_map(fn($case) => "'$case->value'", $this->getEnumCases());
+        $values = array_map(fn($case) => "'$case->value'", $this->getEnumValues());
 
         return sprintf('ENUM(%s)', implode(', ', $values));
     }
@@ -44,30 +39,17 @@ abstract class AbstractEnumType extends Type
     /**
      * @return class-string
      */
-    abstract public function getEnumClass(): string;
-
-    /**
-     * @return non-empty-string
-     */
-    abstract public function getName(): string;
+    abstract protected function getEnumClass(): string;
 
     /**
      * @return BackedEnum[]
      */
-    public function getEnumCases(): array
+    private function getEnumValues(): array
     {
         return $this->getEnumClass()::cases();
     }
 
-    /**
-     * @return list<non-empty-string>
-     */
-    public function getEnumValues(): array
-    {
-        return $this->getEnumClass()::values();
-    }
-
-    public function getValue(mixed $value): mixed
+    private function getValue(mixed $value): mixed
     {
         if (! $value instanceof BackedEnum) {
             return $value;

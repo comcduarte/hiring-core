@@ -10,7 +10,7 @@ class SuccessFailureEnumType extends AbstractEnumType
 {
     public const NAME = 'success_failure_enum';
 
-    public function getEnumClass(): string
+    protected function getEnumClass(): string
     {
         return SuccessFailureEnum::class;
     }

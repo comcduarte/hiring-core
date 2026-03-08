@@ -11,7 +11,7 @@ class UserResetPasswordStatusEnumType extends AbstractEnumType
 {
     public const NAME = 'user_reset_password_status_enum';
 
-    public function getEnumClass(): string
+    protected function getEnumClass(): string
     {
         return UserResetPasswordStatusEnum::class;
     }

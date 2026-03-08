@@ -6,14 +6,13 @@ namespace Core\User\Entity;
 
 use Core\App\Entity\AbstractEntity;
 use Core\App\Entity\TimestampsTrait;
-use Core\App\Entity\UuidIdentifierTrait;
 use Core\User\Repository\UserDetailRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @phpstan-type UserDetailType array{
- *      id: non-empty-string,
+ *      uuid: non-empty-string,
  *      firstName: non-empty-string|null,
  *      lastName: non-empty-string|null,
  *      email: non-empty-string|null,
@@ -27,10 +26,9 @@ use Doctrine\ORM\Mapping as ORM;
 class UserDetail extends AbstractEntity
 {
     use TimestampsTrait;
-    use UuidIdentifierTrait;
 
     #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'detail')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'userUuid', referencedColumnName: 'uuid')]
     protected ?User $user = null;
 
     /** @var non-empty-string|null $firstName */
@@ -44,6 +42,13 @@ class UserDetail extends AbstractEntity
     /** @var non-empty-string|null $email */
     #[ORM\Column(name: 'email', type: 'string', length: 191)]
     protected ?string $email = null;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->created();
+    }
 
     public function getUser(): ?User
     {
@@ -113,7 +118,7 @@ class UserDetail extends AbstractEntity
     public function getArrayCopy(): array
     {
         return [
-            'id'        => $this->id->toString(),
+            'uuid'      => $this->uuid->toString(),
             'firstName' => $this->firstName,
             'lastName'  => $this->lastName,
             'email'     => $this->email,

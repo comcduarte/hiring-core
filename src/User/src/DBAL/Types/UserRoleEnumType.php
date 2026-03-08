@@ -11,7 +11,7 @@ class UserRoleEnumType extends AbstractEnumType
 {
     public const NAME = 'user_role_enum';
 
-    public function getEnumClass(): string
+    protected function getEnumClass(): string
     {
         return UserRoleEnum::class;
     }

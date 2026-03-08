@@ -6,7 +6,6 @@ namespace Core\User\Entity;
 
 use Core\App\Entity\AbstractEntity;
 use Core\App\Entity\TimestampsTrait;
-use Core\App\Entity\UuidIdentifierTrait;
 use Core\User\Enum\UserResetPasswordStatusEnum;
 use Core\User\Repository\UserResetPasswordRepository;
 use DateInterval;
@@ -21,10 +20,9 @@ use Throwable;
 class UserResetPassword extends AbstractEntity
 {
     use TimestampsTrait;
-    use UuidIdentifierTrait;
 
     #[ORM\ManyToOne(targetEntity: User::class, cascade: ['persist', 'remove'], inversedBy: 'resetPasswords')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'userUuid', referencedColumnName: 'uuid')]
     protected ?User $user = null;
 
     #[ORM\Column(name: 'expires', type: 'datetime_immutable')]
@@ -45,6 +43,7 @@ class UserResetPassword extends AbstractEntity
     {
         parent::__construct();
 
+        $this->created();
         $this->expires = DateTimeImmutable::createFromMutable(
             (new DateTime())->add(new DateInterval('P1D'))
         );
@@ -125,7 +124,7 @@ class UserResetPassword extends AbstractEntity
 
     /**
      * @return array{
-     *     id: non-empty-string,
+     *     uuid: non-empty-string,
      *     expires: DateTimeImmutable,
      *     hash: non-empty-string,
      *     status: 'completed'|'requested',
@@ -136,7 +135,7 @@ class UserResetPassword extends AbstractEntity
     public function getArrayCopy(): array
     {
         return [
-            'id'      => $this->id->toString(),
+            'uuid'    => $this->uuid->toString(),
             'expires' => $this->expires,
             'hash'    => $this->hash,
             'status'  => $this->status->value,

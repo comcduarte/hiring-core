@@ -6,7 +6,6 @@ namespace Core\User\Entity;
 
 use Core\App\Entity\AbstractEntity;
 use Core\App\Entity\TimestampsTrait;
-use Core\App\Entity\UuidIdentifierTrait;
 use Core\User\EventListener\UserAvatarEventListener;
 use Core\User\Repository\UserAvatarRepository;
 use DateTimeImmutable;
@@ -14,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @phpstan-type UserAvatarType array{
- *      id: non-empty-string,
+ *      uuid: non-empty-string,
  *      url: non-empty-string|null,
  *      created: DateTimeImmutable,
  *      updated: DateTimeImmutable|null
@@ -27,10 +26,9 @@ use Doctrine\ORM\Mapping as ORM;
 class UserAvatar extends AbstractEntity
 {
     use TimestampsTrait;
-    use UuidIdentifierTrait;
 
     #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'avatar')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'userUuid', referencedColumnName: 'uuid')]
     protected ?User $user = null;
 
     #[ORM\Column(name: 'name', type: 'string', length: 191)]
@@ -38,6 +36,13 @@ class UserAvatar extends AbstractEntity
 
     /** @var non-empty-string|null $url */
     protected ?string $url = null;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->created();
+    }
 
     public function getUser(): ?User
     {
@@ -84,7 +89,7 @@ class UserAvatar extends AbstractEntity
     public function getArrayCopy(): array
     {
         return [
-            'id'      => $this->id->toString(),
+            'uuid'    => $this->uuid->toString(),
             'url'     => $this->url,
             'created' => $this->created,
             'updated' => $this->updated,

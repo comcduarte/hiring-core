@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Core\Security\Entity;
 
-use Core\App\Entity\NumericIdentifierTrait;
 use Core\Security\Repository\OAuthRefreshTokenRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,7 +14,10 @@ use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 #[ORM\Table(name: 'oauth_refresh_tokens')]
 class OAuthRefreshToken implements RefreshTokenEntityInterface
 {
-    use NumericIdentifierTrait;
+    #[ORM\Id]
+    #[ORM\Column(name: 'id', type: 'integer', options: ['unsigned' => true])]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    private int $id;
 
     #[ORM\ManyToOne(targetEntity: OAuthAccessToken::class)]
     #[ORM\JoinColumn(name: 'access_token_id', referencedColumnName: 'id')]
@@ -27,6 +29,18 @@ class OAuthRefreshToken implements RefreshTokenEntityInterface
     #[ORM\Column(name: 'expires_at', type: 'datetime_immutable')]
     private DateTimeImmutable $expiresAt;
 
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
     public function getIdentifier(): string
     {
         return (string) $this->getId();
@@ -34,6 +48,8 @@ class OAuthRefreshToken implements RefreshTokenEntityInterface
 
     public function setIdentifier(mixed $identifier): self
     {
+        $this->setId((int) $identifier);
+
         return $this;
     }
 

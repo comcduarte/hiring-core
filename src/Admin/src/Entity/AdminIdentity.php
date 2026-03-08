@@ -14,7 +14,7 @@ class AdminIdentity implements UserInterface
      * @param array<non-empty-string, string> $details
      */
     public function __construct(
-        public string $id,
+        public string $uuid,
         public string $identity,
         public AdminStatusEnum $status,
         public array $roles = [],
@@ -22,9 +22,9 @@ class AdminIdentity implements UserInterface
     ) {
     }
 
-    public function getId(): string
+    public function getUuid(): string
     {
-        return $this->id;
+        return $this->uuid;
     }
 
     public function getIdentity(): string

@@ -7,7 +7,6 @@ namespace Core\Setting\Entity;
 use Core\Admin\Entity\Admin;
 use Core\App\Entity\AbstractEntity;
 use Core\App\Entity\TimestampsTrait;
-use Core\App\Entity\UuidIdentifierTrait;
 use Core\Setting\Enum\SettingIdentifierEnum;
 use Core\Setting\Repository\SettingRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,10 +22,9 @@ use function json_encode;
 class Setting extends AbstractEntity
 {
     use TimestampsTrait;
-    use UuidIdentifierTrait;
 
     #[ORM\ManyToOne(targetEntity: Admin::class, inversedBy: 'settings')]
-    #[ORM\JoinColumn(name: 'admin_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'admin_uuid', referencedColumnName: 'uuid')]
     protected ?Admin $admin = null;
 
     #[ORM\Column(type: 'setting_enum', enumType: SettingIdentifierEnum::class)]
