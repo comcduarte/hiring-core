@@ -6,8 +6,8 @@ namespace Core\Job;
 
 use Core\Job\Repository\JobRepository;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
-use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Dot\DependencyInjection\Factory\AttributedRepositoryFactory;
+use Core\Job\Repository\JobTypeRepository;
 
 /**
  * @phpstan-type ConfigType array{
@@ -51,6 +51,7 @@ class ConfigProvider
         return [
             'factories' => [
                 JobRepository::class => AttributedRepositoryFactory::class,
+                JobTypeRepository::class => AttributedRepositoryFactory::class,
             ],
         ];
     }
@@ -65,9 +66,15 @@ class ConfigProvider
                 'orm_default' => [
                     'drivers' => [
                         'Core\Job\Entity' => 'JobEntities',
+                        'Core\JobType\Entity' => 'JobTypeEntities',
                     ],
                 ],
                 'JobEntities' => [
+                    'class' => AttributeDriver::class,
+                    'cache' => 'array',
+                    'paths' => [__DIR__ . '/Entity'],
+                ],
+                'JobTypeEntities' => [
                     'class' => AttributeDriver::class,
                     'cache' => 'array',
                     'paths' => [__DIR__ . '/Entity'],
